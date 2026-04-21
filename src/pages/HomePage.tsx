@@ -24,6 +24,7 @@ export default function HomePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [rotation, setRotation] = useState(0);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -216,9 +217,10 @@ export default function HomePage() {
                 >
                   <input
                     type="file"
+                    ref={fileInputRef}
                     accept="audio/mpeg"
                     onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                   />
                   <div className="bg-primary/10 p-4 rounded-full mb-6">
                     <Upload className="w-10 h-10 text-primary" />
@@ -227,7 +229,11 @@ export default function HomePage() {
                   <p className="text-sm text-muted-foreground text-center max-w-sm mb-6 px-4">
                     支持 MP3 格式，推荐大小不超过 100MB
                   </p>
-                  <Button variant="default" className="relative z-10" onClick={() => {}}>
+                  <Button 
+                    variant="default" 
+                    className="relative z-10" 
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     选择文件
                   </Button>
                 </div>
@@ -482,8 +488,8 @@ export default function HomePage() {
           setCurrentImageIndex(0);
         }
       }}>
-        <DialogContent className="max-w-3xl sm:max-w-2xl p-0 overflow-hidden bg-black/95 border-none">
-          <DialogHeader className="p-4 absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent">
+        <DialogContent className="max-w-3xl sm:max-w-2xl p-0 overflow-hidden bg-black/95 border-none flex flex-col max-h-[90vh]">
+          <DialogHeader className="p-4 bg-gradient-to-b from-black/80 to-black/40 shrink-0">
             <DialogTitle className="text-white flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-primary" />
               封面预览 {metadata?.covers && metadata.covers.length > 1 && `(${currentImageIndex + 1}/${metadata.covers.length})`}
@@ -493,7 +499,7 @@ export default function HomePage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="relative aspect-square flex items-center justify-center p-8 mt-12 group/preview">
+          <div className="relative flex-1 flex items-center justify-center p-4 md:p-8 min-h-[300px] overflow-hidden group/preview">
             {metadata?.covers && metadata.covers.length > 0 && (
               <AnimatePresence mode="wait">
                 <motion.img
@@ -515,7 +521,7 @@ export default function HomePage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/20 text-white hover:bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-opacity"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white hover:bg-black/60 opacity-0 md:group-hover/preview:opacity-100 transition-opacity z-30"
                   onClick={() => {
                     setCurrentImageIndex(prev => (prev > 0 ? prev - 1 : metadata.covers!.length - 1));
                     setRotation(0);
@@ -526,7 +532,7 @@ export default function HomePage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/20 text-white hover:bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-opacity"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white hover:bg-black/60 opacity-0 md:group-hover/preview:opacity-100 transition-opacity z-30"
                   onClick={() => {
                     setCurrentImageIndex(prev => (prev < metadata.covers!.length - 1 ? prev + 1 : 0));
                     setRotation(0);
@@ -538,7 +544,7 @@ export default function HomePage() {
             )}
           </div>
 
-          <div className="p-6 bg-black/40 flex justify-center gap-4">
+          <div className="p-4 md:p-6 bg-black/40 flex justify-center gap-4 shrink-0 border-t border-white/10">
             <Button 
               variant="secondary" 
               onClick={() => setRotation(r => r + 90)}
