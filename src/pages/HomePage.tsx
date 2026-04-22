@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Music, Upload, Download, Trash2, CheckCircle2, ImagePlus, X, RotateCw, Maximize2, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { Music, Upload, Download, Trash2, CheckCircle2, ImagePlus, X, RotateCw, Maximize2, ChevronLeft, ChevronRight, Image as ImageIcon, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 import { readMP3Metadata, writeMP3Metadata } from '@/lib/mp3';
 import { compressImage, arrayBufferToBase64 } from '@/lib/image';
@@ -21,6 +22,8 @@ export default function HomePage() {
   const [saving, setSaving] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [lyricsOpen, setLyricsOpen] = useState(false);
+  const [tempLyrics, setTempLyrics] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [rotation, setRotation] = useState(0);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -146,8 +149,9 @@ export default function HomePage() {
 
       toast.success('保存并下载成功！');
     } catch (err) {
-      console.error(err);
-      toast.error('保存文件失败');
+      console.error('Save failed:', err);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      toast.error(`保存文件失败: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
@@ -431,6 +435,20 @@ export default function HomePage() {
                             placeholder="添加备注信息"
                           />
                         </div>
+                        <div className="space-y-2">
+                          <Label>歌词</Label>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start font-normal h-10"
+                            onClick={() => {
+                              setTempLyrics(metadata?.lyrics || '');
+                              setLyricsOpen(true);
+                            }}
+                          >
+                            <FileText className="w-4 h-4 mr-2 text-primary" />
+                            {metadata?.lyrics ? '已包含歌词 (点击编辑)' : '无歌词 (点击添加)'}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -559,6 +577,59 @@ export default function HomePage() {
               关闭
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Lyrics Edit Dialog */}
+      <Dialog open={lyricsOpen} onOpenChange={setLyricsOpen}>
+        <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-0 shrink-0">
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary" />
+              歌词编辑
+            </DialogTitle>
+            <DialogDescription>
+              在此输入或编辑 MP3 文件的内嵌歌词（非同步歌词）。
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 p-6 overflow-hidden">
+            <Textarea
+              className="w-full h-full resize-none font-mono text-sm leading-relaxed"
+              placeholder="请输入歌词内容..."
+              value={tempLyrics}
+              onChange={(e) => setTempLyrics(e.target.value)}
+            />
+          </div>
+
+          <DialogFooter className="p-6 pt-0 shrink-0 flex-row justify-between sm:justify-between items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setTempLyrics('')}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              清空
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setLyricsOpen(false)}
+              >
+                取消
+              </Button>
+              <Button
+                onClick={() => {
+                  handleMetadataChange('lyrics', tempLyrics);
+                  setLyricsOpen(false);
+                  toast.success('歌词已暂存，请记得下载保存文件');
+                }}
+              >
+                保存修改
+              </Button>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

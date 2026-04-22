@@ -14,6 +14,7 @@ export interface MP3Metadata {
   trackNumber?: string;
   composer?: string;
   originalArtist?: string;
+  lyrics?: string;
   covers?: {
     data: ArrayBuffer;
     format: string;

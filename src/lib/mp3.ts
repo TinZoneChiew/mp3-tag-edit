@@ -40,6 +40,7 @@ export async function readMP3Metadata(file: File): Promise<MP3Metadata> {
     let nativeComment = '';
     let nativeTrack = '';
     let nativeComposer = '';
+    let nativeLyrics = '';
 
     // Fallback: Check native tags if common is empty or to find more
     if (metadata.native) {
@@ -92,6 +93,10 @@ export async function readMP3Metadata(file: File): Promise<MP3Metadata> {
           if (tag.id === 'TCOM' || tag.id === 'TCM' || tag.id === 'Composer') {
             nativeComposer = nativeComposer || String(val);
           }
+          // Native Lyrics: USLT (v2.3/2.4) or ULT (v2.2) or 'Lyrics' (APEv2)
+          if (tag.id === 'USLT' || tag.id === 'ULT' || tag.id === 'Lyrics') {
+            nativeLyrics = nativeLyrics || (typeof val === 'object' ? val.text : String(val));
+          }
         });
       });
     }
@@ -119,9 +124,10 @@ export async function readMP3Metadata(file: File): Promise<MP3Metadata> {
       album: common.album || nativeAlbum || '',
       year: common.year?.toString() || nativeYear || '',
       genre: common.genre?.[0] || nativeGenre || '',
-      comment: common.comment?.[0] || nativeComment || '',
-      trackNumber: common.track.no?.toString() || nativeTrack || '',
+      comment: (typeof common.comment?.[0] === 'object' ? (common.comment[0] as any).text : common.comment?.[0]) || nativeComment || '',
+      trackNumber: (common.track?.no?.toString()) || nativeTrack || '',
       composer: common.composer?.[0] || nativeComposer || '',
+      lyrics: (typeof common.lyrics?.[0] === 'object' ? (common.lyrics[0] as any).text : common.lyrics?.[0]) || nativeLyrics || '',
       covers,
     };
   } catch (err) {
@@ -136,6 +142,7 @@ export async function readMP3Metadata(file: File): Promise<MP3Metadata> {
       comment: '',
       trackNumber: '',
       composer: '',
+      lyrics: '',
       covers: [],
     };
   }
@@ -148,20 +155,27 @@ export async function writeMP3Metadata(file: File, metadata: MP3Metadata): Promi
   const arrayBuffer = await file.arrayBuffer();
   const writer: any = new ID3Writer(arrayBuffer);
   
-  if (metadata.title) writer.setFrame('TIT2', metadata.title);
-  if (metadata.artist) writer.setFrame('TPE1', [metadata.artist]);
-  if (metadata.album) writer.setFrame('TALB', metadata.album);
-  if (metadata.year) writer.setFrame('TYER', metadata.year);
-  if (metadata.genre) writer.setFrame('TCON', [metadata.genre]);
+  if (metadata.title) writer.setFrame('TIT2', String(metadata.title));
+  if (metadata.artist) writer.setFrame('TPE1', [String(metadata.artist)]);
+  if (metadata.album) writer.setFrame('TALB', String(metadata.album));
+  if (metadata.year) writer.setFrame('TYER', String(metadata.year));
+  if (metadata.genre) writer.setFrame('TCON', [String(metadata.genre)]);
   if (metadata.comment) {
     writer.setFrame('COMM', {
       description: '',
-      text: metadata.comment,
+      text: String(metadata.comment),
       language: 'eng',
     });
   }
-  if (metadata.trackNumber) writer.setFrame('TRCK', metadata.trackNumber);
-  if (metadata.composer) writer.setFrame('TCOM', [metadata.composer]);
+  if (metadata.trackNumber) writer.setFrame('TRCK', String(metadata.trackNumber));
+  if (metadata.composer) writer.setFrame('TCOM', [String(metadata.composer)]);
+  if (metadata.lyrics) {
+    writer.setFrame('USLT', {
+      description: '',
+      lyrics: String(metadata.lyrics),
+      language: 'eng',
+    });
+  }
 
   if (metadata.covers && metadata.covers.length > 0) {
     metadata.covers.forEach((cover, index) => {
