@@ -191,6 +191,9 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center">
+      <a href="https://pawns.app/?r=19393476" target="_blank">
+      <img src="https://cdn.pawns.app/images/b/728.jpg" alt="Pawns.app" />
+      </a>
       {/* Main Content */}
       <main className="w-full p-6 md:p-10 lg:p-12 flex flex-col items-center">
         <div className="max-w-4xl w-full space-y-8">
