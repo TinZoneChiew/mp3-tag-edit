@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { readMP3Metadata, writeMP3Metadata } from '@/lib/mp3';
 import { compressImage, arrayBufferToBase64 } from '@/lib/image';
 import type { MP3Metadata } from '@/types';
+import PageMeta from '@/components/common/PageMeta';
 
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -190,10 +191,18 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center">
+    <>
+    <PageMeta title="MP3元信息编辑器" description="简单易用的在线ID3标签编辑工具" />
+    <div className="min-h-screen">
+      <div className="flex flex-col items-center">
       <a href="https://pawns.app/?r=19393476" target="_blank">
       <img src="https://cdn.pawns.app/images/b/728.jpg" alt="Pawns.app" />
       </a>
+      <a href="https://beta.publishers.adsterra.com/referral/zdXKCMQ8zG" rel="nofollow">
+      <img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/728%20x%2090%20px.png" />
+      </a>
+      </div>
+    <div className="bg-background flex flex-col items-center">
       {/* Main Content */}
       <main className="w-full p-6 md:p-10 lg:p-12 flex flex-col items-center">
         <div className="max-w-4xl w-full space-y-8">
@@ -636,5 +645,7 @@ export default function HomePage() {
         </DialogContent>
       </Dialog>
     </div>
+    </div>
+    </>
   );
 }
