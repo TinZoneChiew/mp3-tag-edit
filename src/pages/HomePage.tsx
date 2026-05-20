@@ -192,7 +192,7 @@ export default function HomePage() {
 
   return (
     <>
-    <PageMeta title="MP3元信息编辑器" description="简单易用的在线ID3标签编辑工具" />
+    <PageMeta title="MP3元信息编辑" description="简单易用的在线ID3标签编辑工具" />
     <div className="min-h-screen">
       <div className="flex flex-col items-center">
       <a href="https://pawns.app/?r=19393476" target="_blank">
