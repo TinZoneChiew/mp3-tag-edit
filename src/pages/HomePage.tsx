@@ -193,16 +193,7 @@ export default function HomePage() {
   return (
     <>
     <PageMeta title="MP3元信息编辑" description="简单易用的在线ID3标签编辑工具" />
-    <div className="min-h-screen">
-      <div className="flex flex-col items-center">
-      <a href="https://pawns.app/?r=19393476" target="_blank">
-      <img src="https://cdn.pawns.app/images/b/728.jpg" alt="Pawns.app" />
-      </a>
-      <a href="https://beta.publishers.adsterra.com/referral/zdXKCMQ8zG" rel="nofollow">
-      <img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/728%20x%2090%20px.png" />
-      </a>
-      </div>
-    <div className="bg-background flex flex-col items-center">
+    <div className="min-h-screen bg-background flex flex-col items-center">
       {/* Main Content */}
       <main className="w-full p-6 md:p-10 lg:p-12 flex flex-col items-center">
         <div className="max-w-4xl w-full space-y-8">
@@ -485,6 +476,18 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
+          <div className="flex flex-col items-center">
+            <div className="max-w-[728px]">
+              <div id="container-a480818f17bbb2b407bb2d474caa1150"></div>
+              <a href="https://pawns.app/?r=19393476" target="_blank">
+              <img src="https://cdn.pawns.app/images/b/728.jpg" alt="Pawns.app" />
+              </a>
+              <a href="https://beta.publishers.adsterra.com/referral/zdXKCMQ8zG" rel="nofollow">
+              <img alt="banner" src="https://landings-cdn.adsterratech.com/referralBanners/png/728%20x%2090%20px.png" />
+              </a>
+            </div>
+          </div>
+
           <section className="pt-12 border-t">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-primary" />
@@ -644,7 +647,6 @@ export default function HomePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
     </div>
     </>
   );
